@@ -64,12 +64,22 @@
 			<scope>test</scope>
 		</dependency>
 
-		<!-- Explicit Jakarta Persistence API to help IDE code completion for @Entity/@Id -->
-		<dependency>
-			<groupId>jakarta.persistence</groupId>
-			<artifactId>jakarta.persistence-api</artifactId>
-		</dependency>
-	</dependencies>
+        <!-- AWS SDK v2 - S3 module -->
+        <dependency>
+            <groupId>software.amazon.awssdk</groupId>
+            <artifactId>s3</artifactId>
+            <version>2.25.62</version>
+        </dependency>
+
+        <!-- AWS SDK v2 - Core SDK module -->
+        <dependency>
+            <groupId>software.amazon.awssdk</groupId>
+            <artifactId>sdk-core</artifactId>
+            <version>2.25.62</version>
+        </dependency>
+
+
+    </dependencies>
 
 	<build>
 		<plugins>
