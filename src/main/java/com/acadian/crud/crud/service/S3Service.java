@@ -25,6 +25,15 @@ public class S3Service {
 
 
     public String createBucket(String bucketName) {
+        try{
+            if(s3Client.headBucket(HeadBucketRequest.builder().bucket(bucketName).build())!=null){
+                logger.info("Bucket with name {} already exists",bucketName);
+                return "Bucket already exists with name: " +bucketName;
+            }
+        }
+        catch (Exception exception){
+            logger.info("Bucket with name {} does not exist, creating new bucket",bucketName);
+        }
         logger.info("Creating Bucket with name {}",bucketName);
         s3Client.createBucket(b -> b.bucket(bucketName));
         logger.info("Bucket Created Successfully {}",bucketName);
@@ -63,14 +72,24 @@ public class S3Service {
     }
 
     public List<S3Request> listFiles(S3Request s3Request){
-        ListObjectsV2Response listObjectsV2Response = s3Client.listObjectsV2(ListObjectsV2Request.builder()
-                .bucket(s3Request.getBucketName()).build());
-        return listObjectsV2Response.contents().stream().map(s3Object -> {
-            S3Request request = new S3Request();
-            request.setBucketName(s3Request.getBucketName());
-            request.setFileName(s3Object.key());
-            request.setStatus("Found");
-            return request;
-        }).collect(Collectors.toList());
+        List<S3Request> list;
+        try{
+            logger.info("Listing files in bucket {}",s3Request.getBucketName());
+            ListObjectsV2Response listObjectsV2Response = s3Client.listObjectsV2(ListObjectsV2Request.builder()
+                    .bucket(s3Request.getBucketName()).build());
+            list= listObjectsV2Response.contents().stream().map(s3Object -> {
+                S3Request request = new S3Request();
+                request.setBucketName(s3Request.getBucketName());
+                request.setFileName(s3Object.key());
+                request.setStatus("Found");
+                return request;
+            }).collect(Collectors.toList());
+            return list;
+        }
+        catch (Exception exception){
+            logger.error("Exception in S3Service class, issue in listFiles()");
+        }
+        return List.of(new S3Request ("Invalid", null, null, "Failed") );
     }
+
 }

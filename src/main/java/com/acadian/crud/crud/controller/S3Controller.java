@@ -20,7 +20,7 @@ public class S3Controller {
         this.s3Service = s3Service;
     }
 
-    @PostMapping("/create")
+    @PostMapping("/create-bucket")
     public ResponseEntity<String> createBucket(@RequestParam String name) {
         logger.info("Post/ Create Bucket Called");
         return new ResponseEntity<>(s3Service.createBucket(name), HttpStatus.CREATED);
@@ -39,7 +39,7 @@ public class S3Controller {
     }
 
     @GetMapping("/files")
-    public ResponseEntity<List<S3Request>> listFiles(S3Request s3Request){
+    public ResponseEntity<List<S3Request>> listFiles(@RequestBody S3Request s3Request){
     logger.info("Get/ List files Called");
     return ResponseEntity.ok(s3Service.listFiles(s3Request));
     }

@@ -45,4 +45,13 @@ public class S3Request {
                 ", status='" + status + '\'' +
                 '}';
     }
+
+    public S3Request(String bucketName, String fileName, String filePath, String status) {
+        this.bucketName = bucketName;
+        this.fileName = fileName;
+        this.filePath = filePath;
+        this.status = status;
+    }
+    public S3Request() {
+    }
 }
