@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
+import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -61,17 +62,19 @@ public class EmployeeControllerTest {
     }
 
     @Test
+    @Sql(scripts = "/script.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
     void creatMltipleEmployees_fetchAll() throws Exception {
 
-        mockMvc.perform(post("/api/employees")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(employee1)))
-                .andExpect(status().isCreated());
-
-        mockMvc.perform(post("/api/employees")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(employee2)))
-                .andExpect(status().isCreated());
+        //commenting below because now we will use @SQL and use a script to insert data before test.
+//        mockMvc.perform(post("/api/employees")
+//                        .contentType(MediaType.APPLICATION_JSON)
+//                        .content(objectMapper.writeValueAsString(employee1)))
+//                .andExpect(status().isCreated());
+//
+//        mockMvc.perform(post("/api/employees")
+//                        .contentType(MediaType.APPLICATION_JSON)
+//                        .content(objectMapper.writeValueAsString(employee2)))
+//                .andExpect(status().isCreated());
 
 
         mockMvc.perform(get("/api/employees"))
@@ -82,33 +85,35 @@ public class EmployeeControllerTest {
     }
 
     @Test
+    @Sql(scripts = "/script.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
     void createEmployee_fetchById() throws Exception {
 
-        String response1 = mockMvc.perform(post("/api/employees")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(employee1)))
-                .andExpect(status().isCreated())
-                .andReturn()
-                .getResponse()
-                .getContentAsString();
-        Employee createdEmployee1 = objectMapper.readValue(response1, Employee.class);
+        //commenting below because now we will use @SQL and use a script to insert data before test.
+//        String response1 = mockMvc.perform(post("/api/employees")
+//                        .contentType(MediaType.APPLICATION_JSON)
+//                        .content(objectMapper.writeValueAsString(employee1)))
+//                .andExpect(status().isCreated())
+//                .andReturn()
+//                .getResponse()
+//                .getContentAsString();
+//        Employee createdEmployee1 = objectMapper.readValue(response1, Employee.class);
+//
+//        String response2 = mockMvc.perform(post("/api/employees")
+//                        .contentType(MediaType.APPLICATION_JSON)
+//                        .content(objectMapper.writeValueAsString(employee2)))
+//                .andExpect(status().isCreated())
+//                .andReturn()
+//                .getResponse()
+//                .getContentAsString();
+//
+//        Employee createdEmployee2 = objectMapper.readValue(response2, Employee.class);
+//
 
-        String response2 = mockMvc.perform(post("/api/employees")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(employee2)))
-                .andExpect(status().isCreated())
-                .andReturn()
-                .getResponse()
-                .getContentAsString();
-
-        Employee createdEmployee2 = objectMapper.readValue(response2, Employee.class);
-
-
-        mockMvc.perform(get("/api/employees/{id}", createdEmployee1.getId()))
+        mockMvc.perform(get("/api/employees/{id}", 1L))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.name").value("naushad"));
 
-        mockMvc.perform(get("/api/employees/{id}", createdEmployee2.getId()))
+        mockMvc.perform(get("/api/employees/{id}", 2L))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.name").value("shamshad"));
     }
