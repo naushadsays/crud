@@ -20,7 +20,8 @@ public class LogUploader {
         this.s3Service = s3Service;
     }
 
-    @Scheduled(cron = "0 0 1 * * ?")
+    @Scheduled(cron = "0 0 1 * * ?")//daily at 1 am
+//    @Scheduled(fixedRate = 60000)//per minute
     public void uploadLogs() {
         String yesterdaysDate = LocalDate.now().minusDays(1).format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
         String logFilePath = String.format("logs/crud-application-%s.log", yesterdaysDate);

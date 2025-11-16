@@ -50,15 +50,14 @@ public class EmployeeController {
     }
 
     // Update
-    @PutMapping("/{id}")
-    public ResponseEntity<Employee> updateEmployee(@PathVariable Long id, @RequestBody Employee employee) {
+    @PutMapping
+    public ResponseEntity<Employee> updateEmployee(@RequestBody Employee employee) {
         try {
-            logger.warn("PUT/updating Employee with id {}", id);
-            Employee updated = employeeService.updateEmployee(id, employee);
-            logger.warn("Successfully updated Employee with id {}", updated.getId());
+            logger.warn("PUT/updating Employee with id {}", employee.getId());
+            Employee updated = employeeService.updateEmployee(employee);
             return ResponseEntity.ok(updated);
         } catch (RuntimeException ex) {
-            logger.error("Error updating Employee with id {}: {}", id, ex.getMessage());
+            logger.error("Error updating Employee with id {}: {}", employee.getId(), ex.getMessage());
             return ResponseEntity.notFound().build();
         }
     }

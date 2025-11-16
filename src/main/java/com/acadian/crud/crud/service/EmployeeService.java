@@ -4,6 +4,9 @@ import com.acadian.crud.crud.entity.Employee;
 import com.acadian.crud.crud.repository.EmployeeRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.CachePut;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -33,24 +36,33 @@ public class EmployeeService {
     }
 
     // Read by id
+    @Cacheable(value = "employees", key = "#id")
     public Optional<Employee> getEmployeeById(Long id) {
         logger.info("Fetching employee with id: {}", id);
         return employeeRepository.findById(id);
     }
 
     // Update
-    public Employee updateEmployee(Long id, Employee updated) {
-        logger.warn("Updating employee with id: {}", id);
-        return employeeRepository.findById(id)
-            .map(existing -> {
-                existing.setName(updated.getName());
-                existing.setEmail(updated.getEmail());
-                return employeeRepository.save(existing);
-            })
-            .orElseThrow(() -> new RuntimeException("Employee not found with id: " + id));
+    @CachePut(value = "employees", key = "#employee.id")
+    public Employee updateEmployee(Employee employee) {
+        logger.warn("Updating employee with id: {}", employee.getId());
+        Optional<Employee> existing = employeeRepository.findById(employee.getId());
+
+        if (existing.isPresent()) {
+            Employee emp = existing.get();
+            emp.setName(employee.getName());
+            emp.setEmail(employee.getEmail());
+            Employee saved = employeeRepository.save(emp);
+            logger.warn("Successfully updated employee with id: {}", saved.getId());
+            return saved;
+        } else {
+            logger.error("Employee not found with id: {}", employee.getId());
+            throw new RuntimeException("Employee not found with id: " + employee.getId());
+        }
     }
 
     // Delete
+    @CacheEvict(value = "employees", key = "#id")
     public void deleteEmployee(Long id) {
         logger.warn("Deleting employee with id: {}", id);
         employeeRepository.deleteById(id);

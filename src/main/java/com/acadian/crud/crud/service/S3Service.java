@@ -13,7 +13,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
-public class S3Service {
+public class    S3Service {
 
     private final S3Client s3Client;
     private static final Logger logger = LoggerFactory.getLogger(S3Service.class);
