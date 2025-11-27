@@ -1,0 +1,111 @@
+Overview
+
+This module contains a JMeter performance test (PT) executed on the Spring WebFlux CRUD API.
+The objective was to analyze API behavior under continuous load using:
+
+100 concurrent users
+
+1-hour duration
+
+GET /employees endpoint
+
+The test plan (.jmx) and result screenshots are included in this folder.
+
+🛠️ Test Configuration
+Setting	Value
+Tool	Apache JMeter 5.6.3
+Test Duration	3600 sec (1 hour)
+Users (Threads)	100
+Ramp-up Time	100 sec
+Loop Count	Forever
+Endpoint Tested	GET /employees
+Base URL	http://localhost:8080
+Listeners Used	Summary Report, Aggregate Report, View Results in Table
+
+🔹 Execution Details
+
+Total Test Time: 1 hour
+
+Users: 100
+
+Requests Sent: 200,600
+
+Endpoint Hit: /employees
+
+Load Pattern: Continuous (infinite loop)
+
+📊 Key Metrics (Summary Report)
+Metric	Value
+Total Samples	200,600
+Average Response Time	2033 ms
+Minimum	1 ms
+Maximum	4,010,539 ms (~66 minutes)
+Std. Deviation	86,774 ms
+Error %	73.67%
+Throughput	39.7 requests/sec
+Received KB/sec	72.19
+Sent KB/sec	1.89
+📊 Percentiles (Aggregate Report)
+Metric	Value
+Median	108 ms
+90th Percentile	356 ms
+95th Percentile	374 ms
+99th Percentile	420 ms
+🔍 Observations
+
+API performed well initially but started failing as load continued.
+
+73% failures indicate system saturation.
+
+Increasing response times show server overload.
+
+Throughput stabilized around 39–40 req/sec under heavy load.
+
+GET /employees is a heavy endpoint because:
+
+It returns the entire dataset.
+
+No caching is applied for “getAll”.
+
+High frequency from 100 users causes DB pressure.
+
+🧪 Possible Root Causes
+1️⃣ Heavy endpoint
+
+GET /employees returns entire employee list → expensive under load.
+
+2️⃣ No caching for getAllEmployees
+
+Only GET by ID was cached.
+
+3️⃣ DB + Redis + App + JMeter on same machine
+
+Resource starvation (CPU, RAM, IO).
+
+4️⃣ Connection pool exhaustion
+
+R2DBC + PostgreSQL can degrade under extreme concurrency.
+
+🟢 Conclusion
+
+The test achieved its goals:
+
+Successfully simulated 100 concurrent users for 1 hour
+
+Collected performance behavior, percentiles, errors, throughput
+
+Identified system bottlenecks
+
+Validated limits of current configuration
+
+These results will help plan future optimizations such as:
+
+Adding pagination to GET /employees
+
+Adding Redis caching
+
+Scaling PostgreSQL
+
+Increasing server resources
+
+Optimizing connection pooling
